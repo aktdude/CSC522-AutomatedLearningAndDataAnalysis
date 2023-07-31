@@ -1,0 +1,40 @@
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import os
+import random
+import sklearn.metrics as metrics
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn import tree
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+
+path = os.getcwd()
+path += "/Project/Datasets/Derived/games_2004.csv"
+games_2004 = pd.read_csv(path)
+X = games_2004.drop("HOME_TEAM_WINS", axis=1)
+y = games_2004["HOME_TEAM_WINS"]
+
+
+
+X_new = SelectKBest(chi2, k=65).fit_transform(X, y)
+x_train, x_test, y_train, y_test = train_test_split(X_new, y, test_size=0.33, random_state=0)
+
+model = GaussianNB()
+model.fit(x_train,y_train)
+yPredictTest= model.predict(x_test)
+a = accuracy_score(y_test,yPredictTest)
+print("Accuracy With Naive Bayes: ", a)
+
+X_new = SelectKBest(chi2, k=70).fit_transform(X, y)
+x_train, x_test, y_train, y_test = train_test_split(X_new, y, test_size=0.33, random_state=0)
+
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(x_train,y_train)
+yPredictTest= clf.predict(x_test)
+a = accuracy_score(y_test,yPredictTest)
+print("Accuracy With Decision Tree: ", a)
